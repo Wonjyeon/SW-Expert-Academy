@@ -173,6 +173,7 @@
     <ClCompile Include="1259 금속막대.cpp" />
     <ClCompile Include="1260 화학물질2.cpp" />
     <ClCompile Include="1263 사람 네트워크2.cpp" />
+    <ClCompile Include="1264 이미지 유사도 검사.cpp" />
     <ClCompile Include="1267 작업순서.cpp" />
     <ClCompile Include="1808 지희의 고장난 계산기.cpp" />
     <ClCompile Include="1861 정사각형 방.cpp" />
