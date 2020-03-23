@@ -189,6 +189,7 @@
     <ClCompile Include="2805 농작물 수확하기.cpp" />
     <ClCompile Include="2806 N-Queen.cpp" />
     <ClCompile Include="2819 격자판의 숫자 이어 붙이기.cpp" />
+    <ClCompile Include="3024 입국 심사.cpp" />
     <ClCompile Include="3282 0_1 Knapsack.cpp" />
     <ClCompile Include="3431 준환이의 운동관리.cpp" />
     <ClCompile Include="3751 가능한 시험 점수.cpp" />

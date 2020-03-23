@@ -234,5 +234,8 @@
     <ClCompile Include="1264 이미지 유사도 검사.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="3024 입국 심사.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
