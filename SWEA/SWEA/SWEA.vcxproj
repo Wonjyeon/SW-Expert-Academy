@@ -192,6 +192,7 @@
     <ClCompile Include="2819 격자판의 숫자 이어 붙이기.cpp" />
     <ClCompile Include="3024 입국 심사.cpp" />
     <ClCompile Include="3282 0_1 Knapsack.cpp" />
+    <ClCompile Include="3234 준환이의 양팔저울.cpp" />
     <ClCompile Include="3431 준환이의 운동관리.cpp" />
     <ClCompile Include="3751 가능한 시험 점수.cpp" />
     <ClCompile Include="4008 숫자 만들기.cpp" />
