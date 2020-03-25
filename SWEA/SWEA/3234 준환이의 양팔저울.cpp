@@ -7,7 +7,7 @@
 */
 #include <iostream>
 using namespace std;
-
+ 
 int Data[9], visit[9];
 long long ans = 0;
 int N, T, total;
