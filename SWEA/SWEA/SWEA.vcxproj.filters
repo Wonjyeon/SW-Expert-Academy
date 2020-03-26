@@ -243,5 +243,8 @@
     <ClCompile Include="3234 준환이의 양팔저울.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="1494 사랑의 카운슬러.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
