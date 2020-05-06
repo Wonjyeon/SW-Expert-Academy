@@ -249,5 +249,8 @@
     <ClCompile Include="2117 홈 방범 서비스.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="5656 벽돌 깨기.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
