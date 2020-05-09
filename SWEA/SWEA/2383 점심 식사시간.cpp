@@ -16,13 +16,15 @@ int T, N, ans, pe_cnt, st_cnt;
 int lunchTime(vector<int> v, int t) {
 	if (v.size() == 0) return 0;
 	sort(v.begin(), v.end());
-	int use[3] = { 0, };
 	int time = v[0];
-
+	int use[3] = { 0, };
 	while (1) {
+		time++;
+		for (int i = 0; i < 3; i++)
+			use[i]--;
 		for (int i = 0; i < v.size(); i++) {
-			if (!v[i]) continue;
-			if (v[i] <= time) {
+			if (v[i] == 0) continue;
+			if (v[i] <= time - 1) {
 				for (int j = 0; j < 3; j++) {
 					if (use[j] <= 0) {
 						use[j] = t;
@@ -33,9 +35,6 @@ int lunchTime(vector<int> v, int t) {
 				}
 			}
 		}
-		for (int i = 0; i < 3; i++)
-			use[i]--;
-		time++;
 	}
 }
 
@@ -56,12 +55,12 @@ int main() {
 	ios::sync_with_stdio(0); cin.tie(0);
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
-		ans = 987654321;
-		pe_cnt = 0, st_cnt = 0;
 		cin >> N;
+		pe_cnt = 0, st_cnt = 0;
+		ans = 987654321;
+		int num;
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				int num;
 				cin >> num;
 				if (num == 1)
 					pe[pe_cnt].x = i, pe[pe_cnt++].y = j;
@@ -75,6 +74,6 @@ int main() {
 		}
 		vector<int> stairA, stairB;
 		dfs(stairA, stairB, 0);
-		cout << '#' << tc << ' ' << ans + 1 << '\n';
+		cout << '#' << tc << ' ' << ans << '\n';
 	}
 }
