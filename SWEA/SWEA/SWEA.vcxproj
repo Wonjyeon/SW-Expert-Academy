@@ -201,6 +201,7 @@
     <ClCompile Include="4008 숫자 만들기.cpp" />
     <ClCompile Include="4012 요리사.cpp" />
     <ClCompile Include="4013 특이한 자석.cpp" />
+    <ClCompile Include="4014 활주로 건설.cpp" />
     <ClCompile Include="4615 재미있는 오셀로 게임.cpp" />
     <ClCompile Include="4796 의석이의 우뚝 선 산.cpp" />
     <ClCompile Include="5642 합.cpp" />
