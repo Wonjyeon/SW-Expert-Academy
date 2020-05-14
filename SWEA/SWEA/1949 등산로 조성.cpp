@@ -1,42 +1,35 @@
 #include <iostream>
-#include <algorithm>
+#include <vector>
 #include <cstring>
+#include <algorithm>
 using namespace std;
 
-int T, N, K, ans, Top, map[8][8], visit[8][8];
-int dx[] = { -1,1,0,0 };
-int dy[] = { 0,0,-1,1 };
+int T, N, K, max_high, ans, map[8][8], visit[8][8];
+int dx[] = { 0,0,-1,1 };
+int dy[] = { -1,1,0,0 };
 
-int chk(int x, int y) {
+bool chk(int x, int y) {
 	return x >= 0 && x < N&&y >= 0 && y < N;
 }
 
-void dfs(int x, int y, int flag, int depth, int visit[8][8]) {
+void dfs(int x, int y, int cnt, int flag) {
+	ans = max(ans, cnt);
 	visit[x][y] = 1;
 	for (int i = 0; i < 4; i++) {
-		int nx = x + dx[i];
-		int ny = y + dy[i];
-		// 이미 방문했거나 범위를 벗어나면
-		if (visit[nx][ny] || !chk(nx, ny)) {
-			ans = max(ans, depth);
-			continue;
+		int nx = x + dx[i], ny = y + dy[i];
+		if (!chk(nx, ny) || visit[nx][ny]) continue;		// 범위를 벗어났다면
+		if (map[nx][ny] < map[x][y]) {						// 가려는 곳이 더 낮다면
+			dfs(nx, ny, cnt + 1, flag);
 		}
-		// 가려는 곳이 더 높거나 같다면
-		else if (map[nx][ny] >= map[x][y]) {
-			// 이미 K만큼 뺐거나 빼도 갈 수 없다면
-			if (flag == 1 || map[nx][ny] - K >= map[x][y]) {
-				ans = max(ans, depth);
-				continue;
+		else if (map[nx][ny] >= map[x][y]) {				// 가려는 곳이 더 높다면
+			if (flag == 0) {								// 아직 등산로를 깎은 적이 없다면
+				if (map[nx][ny] - K >= map[x][y]) continue;	// 최대한 깎아도 같거나 높다면
+				int tmp = map[nx][ny];
+				map[nx][ny] = map[x][y] - 1;
+				dfs(nx, ny, cnt + 1, 1);
+				map[nx][ny] = tmp;
 			}
-		}
-		if (map[nx][ny] >= map[x][y]) {
-			int tmp = map[nx][ny];
-			map[nx][ny] = map[x][y] - 1;
-			dfs(nx, ny, 1, depth + 1, visit);
-			map[nx][ny] = tmp;
-		}
-		else {
-			dfs(nx, ny, flag, depth + 1, visit);
+			else continue;									// 이미 깎은 적이 있다면
 		}
 	}
 	visit[x][y] = 0;
@@ -47,23 +40,22 @@ int main() {
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
 		cin >> N >> K;
-		Top = 0;
-		ans = 0;
+		max_high = -1;
+		ans = -1;
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				cin >> map[i][j];
-				if (Top < map[i][j])
-					Top = map[i][j];
+				max_high = max(max_high, map[i][j]);
 			}
 		}
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				if (map[i][j] == Top) {
+				if (map[i][j] == max_high) {
 					memset(visit, 0, sizeof(visit));
-					dfs(i, j, 0, 1, visit);
+					dfs(i, j, 1, 0);
 				}
 			}
 		}
-		cout << "#" << tc << " " << ans << endl;
+		cout << '#' << tc << ' ' << ans << '\n';
 	}
 }
