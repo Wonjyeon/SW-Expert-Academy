@@ -205,6 +205,7 @@
     <ClCompile Include="4615 재미있는 오셀로 게임.cpp" />
     <ClCompile Include="4796 의석이의 우뚝 선 산.cpp" />
     <ClCompile Include="5642 합.cpp" />
+    <ClCompile Include="5644 무선 충전.cpp" />
     <ClCompile Include="5656 벽돌 깨기.cpp" />
     <ClCompile Include="5658 보물상자 비밀번호.cpp" />
     <ClCompile Include="5684 운동.cpp" />
