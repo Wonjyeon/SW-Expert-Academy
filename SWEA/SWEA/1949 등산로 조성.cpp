@@ -17,19 +17,19 @@ void dfs(int x, int y, int cnt, int flag) {
 	visit[x][y] = 1;
 	for (int i = 0; i < 4; i++) {
 		int nx = x + dx[i], ny = y + dy[i];
-		if (!chk(nx, ny) || visit[nx][ny]) continue;		// 범위를 벗어났다면
-		if (map[nx][ny] < map[x][y]) {						// 가려는 곳이 더 낮다면
+		if (!chk(nx, ny) || visit[nx][ny]) continue;
+		if (map[nx][ny] < map[x][y]) {
 			dfs(nx, ny, cnt + 1, flag);
 		}
-		else if (map[nx][ny] >= map[x][y]) {				// 가려는 곳이 더 높다면
-			if (flag == 0) {								// 아직 등산로를 깎은 적이 없다면
-				if (map[nx][ny] - K >= map[x][y]) continue;	// 최대한 깎아도 같거나 높다면
+		else if (map[nx][ny] >= map[x][y]) {
+			if (flag == 0) {
+				if (map[nx][ny] - K >= map[x][y]) continue;
 				int tmp = map[nx][ny];
 				map[nx][ny] = map[x][y] - 1;
 				dfs(nx, ny, cnt + 1, 1);
 				map[nx][ny] = tmp;
 			}
-			else continue;									// 이미 깎은 적이 있다면
+			else continue;
 		}
 	}
 	visit[x][y] = 0;
@@ -51,7 +51,6 @@ int main() {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				if (map[i][j] == max_high) {
-					memset(visit, 0, sizeof(visit));
 					dfs(i, j, 1, 0);
 				}
 			}
