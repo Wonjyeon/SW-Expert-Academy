@@ -1,67 +1,47 @@
 #include <iostream>
 #include <algorithm>
-#include <cstring>
 using namespace std;
 
-int map[20][20];
-int visit[101];
-int T, N, MAX, sx, sy;
-int dx[] = { -1,1,1,-1 };
-int dy[] = { 1,1,-1,-1 };
-int dir_cnt[4];
+int T, N, ans, sx, sy, map[21][21];
+bool visit[101];
+int dx[] = { 1,1,-1,-1 };
+int dy[] = { 1,-1,-1,1 };
 
-int chk(int x, int y) {
-	return x >= 0 && x < N&&y >= 0 && y < N;
-}
-
-void dfs(int x, int y, int dir, int sum) {
-	visit[map[x][y]] = 1;
-	for (int i = 0; i <= 1; i++) {
-		if (dir == 0 && sx == x && sy == y && i == 1)
-			break;
-		dir = (dir + i) % 4;
-		int nx = x + dx[dir];
-		int ny = y + dy[dir];
-
-		// 출발지점이고 마지막 방향이야.
-		if (nx == sx&&ny == sy&&dir == 3) {
-			MAX = max(MAX, sum + 1);
-			return;
-		}
-		// 못가. 해당 방향으로는 처음이었어. -> 다시 그 전으로 돌아가.
-		if (!chk(nx, ny) || visit[map[nx][ny]]) {
-			if (dir_cnt[dir] == 0)
-				return;
-		}
-		else {
-			dir_cnt[dir]++;
-			dfs(nx, ny, dir, sum + 1);
-			visit[map[nx][ny]] = 0;		// 다른 루트로 다시 방문할 수도 있어!
-			dir_cnt[dir]--;
-		}
+void dfs(int c, int r, int dir, int cnt) {
+	visit[map[c][r]] = true;
+	int x = c + dx[dir], y = r + dy[dir];
+	// 마지막 방향이면서 처음 지점과 같음. -> 가능한 루트.
+	if (dir == 3 && x == sx&&y == sy) {
+		ans = max(ans, cnt);
+		visit[map[c][r]] = false;
+		return;
 	}
+	// 범위 안에 있으면서 아직 먹지 않은 디저트
+	if (x >= 0 && x < N&&y >= 0 && y < N && !visit[map[x][y]]) {
+		// 최대한 한 방향으로 쭉 감
+		dfs(x, y, dir, cnt + 1);
+		// 아직 방향이 끝나지 않았고, 그 다음 방향으로 진행.
+		if (dir < 3)
+			dfs(x, y, dir + 1, cnt + 1);
+	}
+	visit[map[c][r]] = false;
 }
 
 int main() {
 	ios::sync_with_stdio(0); cin.tie(0);
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
-		MAX = -1;
 		cin >> N;
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
+		ans = -1;
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
 				cin >> map[i][j];
+		for (int i = 0; i < N - 2; i++) {
+			for (int j = 1; j < N - 1; j++) {
+				sx = i, sy = j;
+				dfs(i, j, 0, 1);
 			}
 		}
-		for (int i = 1; i < N - 1; i++) {
-			for (int j = 0; j < N - 2; j++) {
-				memset(visit, 0, sizeof(visit));
-				memset(dir_cnt, 0, sizeof(dir_cnt));
-				sx = i;
-				sy = j;
-				dfs(i, j, 0, 0);
-			}
-		}
-		cout << "#" << tc << " " << MAX << endl;
+		cout << '#' << tc << ' ' << ans << '\n';
 	}
 }
