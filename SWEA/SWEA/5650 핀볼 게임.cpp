@@ -93,4 +93,5 @@ int main() {
 			wormhole[i].clear();
 		startMap.clear();
 	}
+	return 0;
 }
