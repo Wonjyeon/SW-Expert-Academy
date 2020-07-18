@@ -1,38 +1,35 @@
 #include <iostream>
 #include <vector>
-#include <cstring>
 #include <algorithm>
 using namespace std;
 
-int T, N, K, max_high, ans, map[8][8], visit[8][8];
-int dx[] = { 0,0,-1,1 };
-int dy[] = { -1,1,0,0 };
+int T, N, K, max_length, max_height;
+int map[10][10];
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,-1,0,1 };
+bool visit[10][10];
 
-bool chk(int x, int y) {
-	return x >= 0 && x < N&&y >= 0 && y < N;
-}
+void dfs(int x, int y, int length, bool flag) {
+	visit[x][y] = true;
+	max_length = max(max_length, length);
 
-void dfs(int x, int y, int cnt, int flag) {
-	ans = max(ans, cnt);
-	visit[x][y] = 1;
 	for (int i = 0; i < 4; i++) {
-		int nx = x + dx[i], ny = y + dy[i];
-		if (!chk(nx, ny) || visit[nx][ny]) continue;
-		if (map[nx][ny] < map[x][y]) {
-			dfs(nx, ny, cnt + 1, flag);
-		}
-		else if (map[nx][ny] >= map[x][y]) {
-			if (flag == 0) {
-				if (map[nx][ny] - K >= map[x][y]) continue;
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+		if (nx < 0 || ny < 0 || nx >= N || ny >= N || visit[nx][ny]) continue;
+		if (map[nx][ny] >= map[x][y]) {
+			if (!flag && map[nx][ny] - K < map[x][y]) {
 				int tmp = map[nx][ny];
 				map[nx][ny] = map[x][y] - 1;
-				dfs(nx, ny, cnt + 1, 1);
+				dfs(nx, ny, length + 1, true);
 				map[nx][ny] = tmp;
 			}
-			else continue;
 		}
+		else 
+			dfs(nx, ny, length + 1, flag);
 	}
-	visit[x][y] = 0;
+	visit[x][y] = false;
+	return;
 }
 
 int main() {
@@ -40,21 +37,22 @@ int main() {
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
 		cin >> N >> K;
-		max_high = -1;
-		ans = -1;
+		max_height = 0;
+		max_length = 1;
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				cin >> map[i][j];
-				max_high = max(max_high, map[i][j]);
+				max_height = max(max_height, map[i][j]);
 			}
 		}
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				if (map[i][j] == max_high) {
-					dfs(i, j, 1, 0);
+				if (map[i][j] == max_height) {
+					dfs(i, j, 1, false);
 				}
 			}
 		}
-		cout << '#' << tc << ' ' << ans << '\n';
+		cout << '#' << tc << ' ' << max_length << '\n';
 	}
+	return 0;
 }
