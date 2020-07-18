@@ -1,94 +1,96 @@
 #include <iostream>
 #include <vector>
-#include <cstring>
 #include <algorithm>
+#define MAX 101
 using namespace std;
 
-struct Block {
-	int dir1, dir2, n_dir1, n_dir2;
-};
-Block block[5];
+typedef pair<int, int> pa;
+int T, N, max_score = 0;
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
+int map[MAX][MAX];
+vector<pa> wormhole[11];
+vector<pa> startMap;
 
-int T, N, map[100][100], ans, sx, sy;
-int dx[] = { -1,0,1,0 };
-int dy[] = { 0,1,0,-1 };
-vector<pair<int, int>> wormhole[11];
-
-bool wall(int x, int y) {
-	return x < 0 || x >= N || y < 0 || y >= N;
-}
-
-void playGame(int x, int y, int dir) {
-	int cnt = 0;
+int solve(int sx, int sy, int dir) {
+	int x = sx, y = sy;
+	int score = 0;
 	while (1) {
-		x += dx[dir], y += dy[dir];
-		// µµÂøÁ¡À¸·Î µ¹¾Æ¿Â °æ¿ì || ºí·¢È¦¿¡ ºüÁø °æ¿ì
-		if ((x == sx&&y == sy) || map[x][y] == -1) {
-			ans = max(ans, cnt);
-			break;
-		}
-		// º®¿¡ ºÎµúÈù °æ¿ì, 5¹ø ºí·ÏÀ» ¸¸³µÀ» °æ¿ì
-		if (wall(x, y) || map[x][y] == 5) {
+		x += dx[dir];
+		y += dy[dir];
+		// ì¶œë°œ ì§€ì  or ë¸”ë™í™€
+		if ((x == sx && y == sy) || map[x][y] == -1)
+			return score;
+		// ë²½ or 5ë²ˆ ë¸”ë¡
+		if (x < 0 || x >= N || y < 0 || y >= N || map[x][y] == 5) {
 			dir = (dir + 2) % 4;
-			cnt++;
-			continue;
+			score++;
 		}
-		// ºó °ø°£ÀÎ °æ¿ì
-		else if (map[x][y] == 0)
+		// ë¹ˆ ê³µê°„
+		else if (map[x][y] == 0) 
 			continue;
-		// ºí·Ï¿¡ ºÎµúÈù °æ¿ì
-		else if (map[x][y] >= 1 && map[x][y] <= 4) {
-			int b_type = map[x][y];
-			if (dir == block[b_type].dir1)
-				dir = block[b_type].n_dir1;
-			else if (dir == block[b_type].dir2)
-				dir = block[b_type].n_dir2;
-			else
-				dir = (dir + 2) % 4;
-			cnt++;
+		// ì›œí™€
+		else if (map[x][y] > 5) {
+			int wid = map[x][y];
+			int x1 = wormhole[wid][0].first;
+			int y1 = wormhole[wid][0].second;
+			int x2 = wormhole[wid][1].first;
+			int y2 = wormhole[wid][1].second;
+			if (x == x1 && y == y1) x = x2, y = y2;
+			else x = x1, y = y1;
 		}
-		// ¿úÈ¦¿¡ Åë°úµÈ °æ¿ì
-		else if (map[x][y] >= 6) {
-			int w_type = map[x][y];
-			if (x == wormhole[w_type][0].first && y == wormhole[w_type][0].second)
-				x = wormhole[w_type][1].first, y = wormhole[w_type][1].second;
-			else
-				x = wormhole[w_type][0].first, y = wormhole[w_type][0].second;
+		// 1~4 ë¸”ë¡
+		else {
+			score++;
+			if (map[x][y] == 1) {
+				if (dir == 2) dir = 1;
+				else if (dir == 3) dir = 0;
+				else dir = (dir + 2) % 4;
+			}
+			else if (map[x][y] == 2) {
+				if (dir == 3) dir = 2;
+				else if (dir == 0) dir = 1;
+				else dir = (dir + 2) % 4;
+			}
+			else if (map[x][y] == 3) {
+				if (dir == 0) dir = 3;
+				else if (dir == 1) dir = 2;
+				else dir = (dir + 2) % 4;
+			}
+			else if (map[x][y] == 4) {
+				if (dir == 1) dir = 0;
+				else if (dir == 2) dir = 3;
+				else dir = (dir + 2) % 4;
+			}
 		}
 	}
 }
 
 int main() {
 	ios::sync_with_stdio(0); cin.tie(0);
-	block[1].dir1 = 3, block[1].n_dir1 = 0, block[1].dir2 = 2, block[1].n_dir2 = 1;
-	block[2].dir1 = 0, block[2].n_dir1 = 1, block[2].dir2 = 3, block[2].n_dir2 = 2;
-	block[3].dir1 = 1, block[3].n_dir1 = 2, block[3].dir2 = 0, block[3].n_dir2 = 3;
-	block[4].dir1 = 2, block[4].n_dir1 = 3, block[4].dir2 = 1, block[4].n_dir2 = 0;
-
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
 		cin >> N;
-		ans = 0;
-		for (int i = 6; i < 11; i++) {
-			wormhole[i].clear();
-		}
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				cin >> map[i][j];
-				if (map[i][j] >= 6)
-					wormhole[map[i][j]].push_back({ i,j });		// ¿úÈ¦
+				if (map[i][j] == 0)
+					startMap.push_back({ i,j });
+				else if (map[i][j] > 5)
+					wormhole[map[i][j]].push_back({ i,j });
 			}
 		}
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if (map[i][j] == 0) {
-					sx = i, sy = j;
-					for (int d = 0; d < 4; d++) {
-						playGame(i, j, d);
-					}
-				}
+		for (int i = 0; i < startMap.size(); i++) {
+			for (int d = 0; d < 4; d++) {
+				int sx = startMap[i].first;
+				int sy = startMap[i].second;
+				max_score = max(max_score, solve(sx, sy, d));
 			}
 		}
-		cout << '#' << tc << ' ' << ans << '\n';
+		cout << '#' << tc << ' ' << max_score << '\n';
+		max_score = 0;
+		for (int i = 6; i <= 10; i++)
+			wormhole[i].clear();
+		startMap.clear();
 	}
 }
