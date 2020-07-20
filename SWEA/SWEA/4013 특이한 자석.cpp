@@ -1,117 +1,91 @@
 #include <iostream>
-#include <math.h>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
+typedef pair<int, int> pa;
 
-void doRotate(int index, int rotate_type);
-void printResult(int test_case);
+int T, K, score;
+int magnet[4][8];
+pa rota[21];
 
-int arr[4][8] = { 0 };
+void solve() {
+	for (int k = 0; k < K; k++) {
+		vector<pa> ro_magnet;
+		int mNum = rota[k].first - 1;
+		int dir = rota[k].second;
+		ro_magnet.push_back({ mNum, dir });
 
-int main()
-{
+		//ì™¼ìª½ í™•ì¸
+		int left = magnet[mNum][6];
+		int tDir = (dir*-1);
+		for (int i = mNum - 1; i >= 0; i--) {
+			if (left != magnet[i][2]) {
+				ro_magnet.push_back({ i, tDir });
+				tDir *= -1;
+				left = magnet[i][6];
+			}
+			else break;
+		}
 
-	int T, K, rotate_type, wheel;
+		//ì˜¤ë¥¸ìª½ í™•ì¸
+		int right = magnet[mNum][2];
+		tDir = (dir*-1);
+		for (int i = mNum + 1; i < 4; i++) {
+			if (right != magnet[i][6]) {
+				ro_magnet.push_back({ i, tDir });
+				tDir *= -1;
+				right = magnet[i][2];
+			}
+			else break;
+		}
 
-	// test_case ¼ö ÀÔ·Â
+		//íšŒì „
+		for (int i = 0; i < ro_magnet.size(); i++) {
+			int n = ro_magnet[i].first;
+			int d = ro_magnet[i].second;
+
+			// ì‹œê³„ -> ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™.
+			if (d == 1) {
+				int tmp = magnet[n][7];
+				for (int j = 6; j >= 0; j--) {
+					magnet[n][j + 1] = magnet[n][j];
+				}
+				magnet[n][0] = tmp;
+			}
+			// ë°˜ì‹œê³„ -> ì™¼ìª½ìœ¼ë¡œ ì´ë™.
+			else {
+				int tmp = magnet[n][0];
+				for (int j = 1; j < 8; j++) {
+					magnet[n][j - 1] = magnet[n][j];
+				}
+				magnet[n][7] = tmp;
+			}
+		}
+	}
+	return;
+}
+
+int main() {
+	ios::sync_with_stdio(0); cin.tie(0);
 	cin >> T;
-
-	for (int i = 1; i <= T; i++)
-	{
+	for (int tc = 1; tc <= T; tc++) {
 		cin >> K;
-
-		for (int p = 0; p < 4; p++)
-		{
-			for (int j = 0; j < 8; j++)
-			{
-				cin >> arr[p][j];
+		score = 0;
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 8; j++) {
+				cin >> magnet[i][j];
 			}
 		}
-		while (K--)
-		{
-			int a[4] = { 0 };
-			cin >> wheel >> rotate_type;
-			int r_type = rotate_type;
-			int idx = wheel - 1;
-			a[idx] = r_type;
-			// ¿ŞÂÊÀ¸·Î °Ë»ç
-			while (idx > 0)
-			{
-				if (arr[idx][6] != arr[idx - 1][2])
-				{
-					a[idx - 1] = r_type*-1;
-					r_type *= -1;
-					idx--;
-				}
-				else
-					break;
-
-			}
-			idx = wheel - 1;
-			r_type = rotate_type;
-			// ¿À¸¥ÂÊÀ¸·Î °Ë»ç
-			while (idx < 3)
-			{
-				if (arr[idx][2] != arr[idx + 1][6])
-				{
-					a[idx + 1] = r_type*-1;
-					r_type *= -1;
-					idx++;
-				}
-				else
-					break;
-			}
-			for (int d = 0; d < 4; d++)
-			{
-				if (a[d] != 0)
-				{
-					doRotate(d, a[d]);
-				}
-			}
+		for (int i = 0; i < K; i++) {
+			cin >> rota[i].first >> rota[i].second;
 		}
-
-		printResult(i);
+		solve();
+		for (int i = 0; i < 4; i++) {
+			if (magnet[i][0] == 1) 
+				score += pow(2, i);
+		}
+		cout << '#' << tc << ' ' << score << '\n';
 	}
-}
-void doRotate(int index, int rotate_type)
-{
-	int temp = 0;
-	int arr2[8] = { 0 };
-	if (rotate_type == 1)
-	{
-		arr2[0] = arr[index][7];
-		for (int i = 1; i < 8; i++)
-		{
-			arr2[i] = arr[index][i - 1];
-		}
-		for (int i = 0; i < 8; i++)
-		{
-			arr[index][i] = arr2[i];
-		}
-	}
-	else if (rotate_type == -1)
-	{
-		arr2[7] = arr[index][0];
-		for (int i = 0; i < 7; i++)
-		{
-			arr2[i] = arr[index][i + 1];
-		}
-		for (int i = 0; i < 8; i++)
-		{
-			arr[index][i] = arr2[i];
-		}
-	}
-}
-
-void printResult(int test_case)
-{
-	int ans = 0;
-	for (int j = 0; j < 4; j++)
-	{
-		if (arr[j][0] == 0)
-			ans += 0;
-		else if (arr[j][0] == 1)
-			ans += pow(2, j);
-	}
-	cout << "#" << test_case << " " << ans << endl;
+	return 0;
 }
