@@ -2,45 +2,51 @@
 #include <vector>
 #include <algorithm>
 using namespace std;
+
+typedef pair<int, int> pa;
 struct BC {
 	int x, y, c, p;
 };
-int T, M, A, ans;
-vector<pair<int, int>> pA, pB;
-vector<BC> bc;
-int dx[] = { 0, 0,1,0,-1 };
-int dy[] = { 0,-1,0,1,0 };
+int T, M, A, dir, ans = 0;
+int dx[5] = { 0,0,1,0,-1 };
+int dy[5] = { 0,-1,0,1,0 };
+pa pA[101], pB[101];
+BC battery[8];
 
-bool cmp(BC b1, BC b2) {
-	return b1.p > b2.p;
+bool cmp(int a, int b) {
+	return battery[a].p > battery[b].p;
 }
 
 void solve() {
 	for (int i = 0; i <= M; i++) {
-		int ax = pA[i].first, ay = pA[i].second;
-		int bx = pB[i].first, by = pB[i].second;
-		vector<pair<int, int>> vA, vB;
+		int aX = pA[i].first, aY = pA[i].second;
+		int bX = pB[i].first, bY = pB[i].second;
+		vector<int> vA, vB;
+
 		for (int j = 0; j < A; j++) {
-			BC now = bc[j];
-			if (abs(ax - now.x) + abs(ay - now.y) <= now.c)
-				vA.push_back({ j, now.p });
-			if (abs(bx - now.x) + abs(by - now.y) <= now.c)
-				vB.push_back({ j, now.p });
+			BC nowBC = battery[j];
+			int distA = abs(aX - nowBC.x) + abs(aY - nowBC.y);
+			int distB = abs(bX - nowBC.x) + abs(bY - nowBC.y);
+			if (distA <= nowBC.c)
+				vA.push_back(j);
+			if (distB <= nowBC.c)
+				vB.push_back(j);
 		}
-		// B만 있는 경우
-		if (!vA.size() && vB.size())
-			ans += vB[0].second;
-		// A만 있는 경우
-		else if (vA.size() && !vB.size())
-			ans += vA[0].second;
-		// 둘 다 있는 경우
-		else if (vA.size() && vB.size()) {
+		sort(vA.begin(), vA.end(), cmp);
+		sort(vB.begin(), vB.end(), cmp);
+		if (vA.size() > 0 && vB.size() == 0)
+			ans += battery[vA[0]].p;
+		else if (vA.size() == 0 && vB.size() > 0)
+			ans += battery[vB[0]].p;
+		else if (vA.size() > 0 && vB.size() > 0) {
 			int Max = 0;
 			for (int a = 0; a < vA.size(); a++) {
-				int tmp = 0;
 				for (int b = 0; b < vB.size(); b++) {
-					if (vA[a].first == vB[b].first) tmp = vA[a].second;
-					else tmp = vA[a].second + vB[b].second;
+					int tmp = 0;
+					if (vA[a] == vB[b]) 
+						tmp = battery[vA[a]].p;
+					else 
+						tmp = battery[vA[a]].p + battery[vB[b]].p;
 					Max = max(Max, tmp);
 				}
 			}
@@ -52,35 +58,23 @@ void solve() {
 int main() {
 	ios::sync_with_stdio(0); cin.tie(0);
 	cin >> T;
+	pA[0] = { 1,1 };
+	pB[0] = { 10,10 };
 	for (int tc = 1; tc <= T; tc++) {
-		bc.clear();
-		pA.clear();
-		pB.clear();
 		ans = 0;
-		int dir;
-		pA.push_back({ 1,1 });
-		pB.push_back({ 10,10 });
 		cin >> M >> A;
 		for (int i = 1; i <= M; i++) {
 			cin >> dir;
-			int x = pA[i - 1].first + dx[dir];
-			int y = pA[i - 1].second + dy[dir];
-			pA.push_back({ x,y });
+			pA[i] = { pA[i - 1].first + dx[dir], pA[i - 1].second + dy[dir] };
 		}
 		for (int i = 1; i <= M; i++) {
 			cin >> dir;
-			int x = pB[i - 1].first + dx[dir];
-			int y = pB[i - 1].second + dy[dir];
-			pB.push_back({ x,y });
+			pB[i] = { pB[i - 1].first + dx[dir], pB[i - 1].second + dy[dir] };
 		}
 		for (int i = 0; i < A; i++) {
-			BC b;
-			cin >> b.x >> b.y >> b.c >> b.p;
-			bc.push_back(b);
+			cin >> battery[i].x >> battery[i].y >> battery[i].c >> battery[i].p;
 		}
-		sort(bc.begin(), bc.end(), cmp);
 		solve();
-
 		cout << '#' << tc << ' ' << ans << '\n';
 	}
 }
