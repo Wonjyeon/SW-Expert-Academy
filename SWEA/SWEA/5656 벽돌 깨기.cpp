@@ -1,106 +1,85 @@
 #include <iostream>
+#include <vector>
 #include <queue>
 #include <algorithm>
-#include <cstring>
 using namespace std;
 
-int T, N, W, H, ans = 180;
-int map[15][12];
-int dx[] = { 0,0,1,-1 };
-int dy[] = { 1,-1,0,0 };
+int T, N, W, H, ans, total = 0;
+int dx[] = { -1,0,1,0 };
+int dy[] = { 0,1,0,-1 };
+vector<vector<int>> map(15, vector<int>(12,0));
 
-int index(int w) {
-	for (int i = 0; i < H; i++) {
-		if (map[i][w] > 0)
-			return i;
-	}
-	return -1;
+bool isWall(int x, int y) {
+	return x < 0 || y < 0 || x >= H || y >= W;
 }
 
-void bfs(int X, int Y) {
-	queue<pair<int, int>> q;
-	q.push({ X, Y });
-	bool visit[15][12];
-	memset(visit, false, sizeof(visit));
-	visit[X][Y] = true;
-	while (!q.empty()) {
-		int x = q.front().first, y = q.front().second;
-		int n = map[x][y];
-		map[x][y] = 0;
-		q.pop();
-		for (int i = 0; i < 4; i++) {
-			int nx = x, ny = y;
-			for (int k = 0; k < n - 1; k++) {
-				nx += dx[i], ny += dy[i];
-				if (nx < 0 || nx >= H || ny < 0 || ny >= W) break;
-				if (visit[nx][ny]) continue;
-				if (map[nx][ny] == 1) map[nx][ny] = 0;
-				if (map[nx][ny] > 1) {
-					visit[nx][ny] = true;
-					q.push({ nx, ny });
-				}
+void arrange() {
+	while (1) {
+		int cnt = 0;
+		for (int w = 0; w < W; w++) {
+			for (int h = H - 2; h >= 0; h--) {
+				if (map[h][w] == 0) continue;
+				else if (map[h + 1][w] != 0) continue;
+				map[h + 1][w] = map[h][w];
+				map[h][w] = 0;
+				cnt++;
 			}
 		}
-	}
-	// ∫Æµπ ªË¡¶ »ƒ ¿Á¡§∏Æ.
-	for (int j = 0; j < W; j++) {
-		int idx = H;
-		for (int i = H - 1; i >= 0; i--) {
-			if (map[i][j] == 0) {
-				idx = i;
-				break;
-			}
-		}
-		// «ÿ¥Á ø≠¿∫ ∏µŒ ∫Æµπ. --> ¿Á¡§∏Æ«“ « ø‰ æ¯¿Ω.
-		if (idx == H) continue;
-		int tmp = idx;
-		for (int i = tmp - 1; i >= 0; i--) {
-			if (map[i][j] > 0) {
-				map[idx][j] = map[i][j];
-				map[i][j] = 0;
-				idx--;
-			}
-		}
+		if (cnt == 0) return;
 	}
 }
 
-void dfs(int depth) {
-	if (depth == N) {
-		int sum = 0;
-		for (int i = 0; i < H; i++) {
-			for (int j = 0; j < W; j++) {
-				if (map[i][j] > 0) sum++;
-			}
-		}
-		ans = min(ans, sum);
-		return;
-	}
-	// «ˆ¿Á πËø≠ ªÛ≈¬∏¶ ¿˙¿Â«‘. º±≈√ ¿¸¿∏∑Œ µ«µπ∏Æ±‚ ¿ß«‘.
-	int temp[15][12];
-	for (int i = 0; i < H; i++)
-		for (int j = 0; j < W; j++)
-			temp[i][j] = map[i][j];
-	int idx;
-	int cnt = 0;
-	for (int i = 0; i < W; i++) {
-		idx = index(i);
-		// «ÿ¥Á ø≠¿∫ º±≈√«“ ∫Æµπ¿Ã æ¯¿Ω.
-		if (idx < 0) {
-			cnt++;
-			continue;
-		}
-		cnt = 0;
-		bfs(idx, i);
-		dfs(depth + 1);
-		// «ÿ¥Á ∫Æµπ º±≈√ ¿¸¿∏∑Œ µ«µπ∏≤.
-		for (int i = 0; i < H; i++)
-			for (int j = 0; j < W; j++)
-				map[i][j] = temp[i][j];
-	}
-	// ∏µÁ ø≠ø° ¥Î«ÿ º±≈√«“ ∫Æµπ¿Ã æ¯æ˙¿Ω.
-	if (cnt == W) {
+void solve(int n, int total) {
+	if (total == 0) {
 		ans = 0;
 		return;
+	}
+	if (n == N) {
+		ans = min(ans, total);
+		return;
+	}
+	vector<vector<int>> tmp = map;
+	int w, h;								// w : Ïó¥, h : Ìñâ
+	for (w = 0; w < W; w++) {
+		if (map[H-1][w] == 0) continue;		// Ìï¥Îãπ Ïó¥ÏóêÎäî ÎÇ®ÏùÄ Î≤ΩÎèåÏù¥ ÏóÜÎã§.
+		for (h = 0; h < H; h++) {			// Î≤ΩÎèå ÏúÑÏπòÍπåÏßÄ ÎÇ¥Î†§Í∞ê.
+			if (map[h][w] != 0) break;
+		}
+		if (map[h][w] == 1) {
+			map[h][w] = 0;
+			solve(n + 1,  total - 1);
+		}
+		else {
+			queue<pair<pair<int, int>, int>> q;
+			q.push({ {h, w}, map[h][w] });
+			map[h][w] = 0;
+			int cnt = 1;
+			while (!q.empty()) {
+				int x = q.front().first.first;
+				int y = q.front().first.second;
+				int dist = q.front().second - 1;
+				q.pop();
+				for (int dir = 0; dir < 4; dir++) {
+					int nx = x;
+					int ny = y;
+					for (int k = 0; k < dist; k++) {
+						nx += dx[dir];
+						ny += dy[dir];
+						if (isWall(nx, ny)) break;
+						
+						if (map[nx][ny] >= 1) {
+							if (map[nx][ny] > 1)
+								q.push({ {nx,ny}, map[nx][ny] });
+							map[nx][ny] = 0;
+							cnt++;
+						}
+					}
+				}
+			}
+			arrange();
+			solve(n + 1, total - cnt);
+		}
+		map = tmp;
 	}
 }
 
@@ -108,12 +87,15 @@ int main() {
 	ios::sync_with_stdio(0); cin.tie(0);
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
+		ans = 0;
 		cin >> N >> W >> H;
-		ans = 180;
-		for (int i = 0; i < H; i++)
-			for (int j = 0; j < W; j++)
+		for (int i = 0; i < H; i++) {
+			for (int j = 0; j < W; j++) {
 				cin >> map[i][j];
-		dfs(0);
+				if (map[i][j] >= 1) ans++;
+			}
+		}
+		solve(0, ans);
 		cout << '#' << tc << ' ' << ans << '\n';
 	}
 }
