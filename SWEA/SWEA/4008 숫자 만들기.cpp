@@ -1,44 +1,49 @@
 #include <iostream>
 #include <algorithm>
+#define INF 987654321
 using namespace std;
 
-const int INF = 100000001;
-int T, N, MAX, MIN, num[12], op[4];
+int T, N, maxValue, minValue;
+int op[4];
+int num[4];
 
-void dfs(int cnt, int sum) {
-	if (cnt == N) {
-		MAX = max(MAX, sum);
-		MIN = min(MIN, sum);
+void dfs(int depth, int sum) {
+	if (depth == N) {
+		maxValue = max(maxValue, sum);
+		minValue = min(minValue, sum);
 		return;
 	}
 	for (int i = 0; i < 4; i++) {
-		if (op[i] == 0)
-			continue;
+		if (op[i] == 0) continue;
 		op[i]--;
 		if (i == 0)
-			dfs(cnt + 1, sum + num[cnt]);
+			dfs(depth + 1, sum + num[depth]);
 		else if (i == 1)
-			dfs(cnt + 1, sum - num[cnt]);
+			dfs(depth + 1, sum - num[depth]);
 		else if (i == 2)
-			dfs(cnt + 1, sum*num[cnt]);
-		else if (i == 3)
-			dfs(cnt + 1, sum / num[cnt]);
+			dfs(depth + 1, sum*num[depth]);
+		else
+			dfs(depth + 1, sum / num[depth]);
 		op[i]++;
 	}
+	return;
 }
 
 int main() {
-	ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+	ios::sync_with_stdio(0); cin.tie(0);
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
-		MIN = INF;
-		MAX = -INF;
 		cin >> N;
-		for (int i = 0; i < 4; i++)
+		maxValue = -INF;
+		minValue = INF;
+		for (int i = 0; i < 4; i++) {
 			cin >> op[i];
-		for (int i = 0; i < N; i++)
+		}
+		for (int i = 0; i < N; i++) {
 			cin >> num[i];
+		}
 		dfs(1, num[0]);
-		cout << "#" << tc << " " << MAX - MIN << '\n';
+		cout << '#' << tc << ' ' << maxValue - minValue << '\n';
 	}
+	return 0;
 }
