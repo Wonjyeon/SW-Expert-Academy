@@ -77,4 +77,5 @@ int main() {
 		solve();
 		cout << '#' << tc << ' ' << ans << '\n';
 	}
+	return 0;
 }
