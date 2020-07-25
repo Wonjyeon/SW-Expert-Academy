@@ -98,4 +98,5 @@ int main() {
 		solve(0, ans);
 		cout << '#' << tc << ' ' << ans << '\n';
 	}
+	return 0;
 }
