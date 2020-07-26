@@ -1,108 +1,89 @@
 #include <iostream>
-#include <algorithm>
 using namespace std;
 
-int T, N, X, map[20][20];
+int T, N, X, ans = 0;
+int map[20][20];
 
-int solution() {
-	int ans = 0;
-	// Çà ±âÁØÀ¸·Î count.
+void solve() {
+	// í–‰ ë‹¨ìœ„ë¡œ íƒìƒ‰
 	for (int i = 0; i < N; i++) {
-		int prev = map[i][0];
+		int now_height = map[i][0];
 		int cnt = 0;
-		int flag = 2;
-		int k = 0;
+		bool flag = false;
+		bool available = true;
 		for (int j = 0; j < N; j++) {
-			if (map[i][j] == prev) {
+			if (map[i][j] == now_height) {
 				cnt++;
-				if (cnt == N) {
-					ans++;
+			}
+			// 1ì¹¸ ë‚®ì€ ê³³ìœ¼ë¡œ
+			else if (map[i][j] == now_height - 1) {
+				if (flag && cnt < X) {
+					available = false;
 					break;
 				}
+				flag = true;
+				now_height = map[i][j];
+				cnt = 1;
 			}
-			// ÇöÀç°¡ ÀÌÀüº¸´Ù 1°³ ³·Àº °æ¿ì
-			else if (prev - map[i][j] == 1) {
-				flag = -1;
-				prev = map[i][j];
-				cnt = 0;
-				int cnt2 = 1;
-				for (k = j + 1; k < N; k++) {
-					if (map[i][k] != map[i][j]) break;
-					cnt2++;
-				}
-				// ±æÀÌ°¡ Xº¸´Ù Âª´Ù¸é °æ»ç·Î¸¦ ³õÀ» ¼ö ¾øÀ½.
-				if (cnt2 < X)
-					break;
-				if (k == N || (k == N - 1 && map[i][k] == prev)) {
-					ans++;
+			// 1ì¹¸ ë†’ì€ ê³³ìœ¼ë¡œ
+			else if (map[i][j] == now_height + 1) {
+				if ((flag && cnt < 2 * X) || (!flag && cnt < X)) {
+					available = false;
 					break;
 				}
-				else
-					j--;
+				flag = false;
+				now_height = map[i][j];
+				cnt = 1;
 			}
-			// ÇöÀç°¡ ÀÌÀüº¸´Ù 1°³ ³ôÀº °æ¿ì
-			else if (prev - map[i][j] == -1) {
-				if ((flag == -1 && cnt < 2 * X) || cnt < X) break;
-				prev = map[i][j];
-				flag = 1;
-				j--;
-				cnt = 0;
-			}
-			// ±×°Íµµ ¾Æ´Ï¶ó¸é ºüÁ®³ª¿È.
-			else
+			else {
+				available = false;
 				break;
-			if (j == N - 1) ans++;
+			}
 		}
+		if (available == false || flag == true && cnt < X)
+			continue;
+		ans++;
 	}
-	// ¿­ ±âÁØÀ¸·Î count.
+	// ì—´ ë‹¨ìœ„ë¡œ íƒìƒ‰
 	for (int i = 0; i < N; i++) {
-		int prev = map[0][i];
+		int now_height = map[0][i];
 		int cnt = 0;
-		int k = 0;
-		int flag = 2;
+		bool flag = false;
+		bool available = true;
 		for (int j = 0; j < N; j++) {
-			if (map[j][i] == prev) {
+			if (map[j][i] == now_height) {
 				cnt++;
-				if (cnt == N) {
-					ans++;
+			}
+			// 1ì¹¸ ë‚®ì€ ê³³ìœ¼ë¡œ
+			else if (map[j][i] == now_height - 1) {
+				if (flag && cnt < X) {
+					available = false;
 					break;
 				}
+				flag = true;
+				now_height = map[j][i];
+				cnt = 1;
 			}
-			// ÇöÀç°¡ ÀÌÀüº¸´Ù 1°³ ³·Àº °æ¿ì
-			else if (prev - map[j][i] == 1) {
-				flag = -1;
-				prev = map[j][i];
-				cnt = 0;
-				int cnt2 = 1;
-				for (k = j + 1; k < N; k++) {
-					if (map[k][i] != map[j][i]) break;
-					cnt2++;
-				}
-				// ±æÀÌ°¡ Xº¸´Ù Âª´Ù¸é °æ»ç·Î¸¦ ³õÀ» ¼ö ¾øÀ½.
-				if (cnt2 < X)
-					break;
-				if (k == N || (k == N - 1 && map[k][i] == prev)) {
-					ans++;
+			// 1ì¹¸ ë†’ì€ ê³³ìœ¼ë¡œ
+			else if (map[j][i] == now_height + 1) {
+				if ((flag && cnt < 2 * X) || (!flag && cnt < X)) {
+					available = false;
 					break;
 				}
-				else
-					j--;
+				flag = false;
+				now_height = map[j][i];
+				cnt = 1;
 			}
-			// ÇöÀç°¡ ÀÌÀüº¸´Ù 1°³ ³ôÀº °æ¿ì
-			else if (prev - map[j][i] == -1) {
-				if ((flag == -1 && cnt < 2 * X) || cnt < X) break;
-				prev = map[j][i];
-				cnt = 0;
-				flag = 1;
-				j--;
-			}
-			// ±×°Íµµ ¾Æ´Ï¶ó¸é ºüÁ®³ª¿È.
-			else
+			else {
+				available = false;
 				break;
-			if (j == N - 1) ans++;
+			}
 		}
+		if (available == false || flag == true && cnt < X)
+			continue;
+		ans++;
 	}
-	return ans;
+	return;
 }
 
 int main() {
@@ -110,11 +91,14 @@ int main() {
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
 		cin >> N >> X;
+		ans = 0;
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				cin >> map[i][j];
 			}
 		}
-		cout << '#' << tc << ' ' << solution() << '\n';
+		solve();
+		cout << '#' << tc << ' ' << ans << '\n';
 	}
+	return 0;
 }
