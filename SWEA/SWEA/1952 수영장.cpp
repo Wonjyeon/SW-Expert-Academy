@@ -2,35 +2,36 @@
 #include <algorithm>
 using namespace std;
 
-int T, week[13], D[12], pay[4], ans;
+int T, ans, pay[4], minValue[13];
 
 void solve(int idx, int sum) {
 	if (idx > 12) {
-		ans = min(sum, ans);
+		ans = min(ans, sum);
 		return;
 	}
-	int tmp = 0;
 	if (idx <= 10) {
-		tmp = D[idx] + D[idx + 1] + D[idx + 2];
-		if (tmp > pay[2])
+		int threeMonths = minValue[idx] + minValue[idx + 1] + minValue[idx + 2];
+		if (threeMonths > pay[2])
 			solve(idx + 3, sum + pay[2]);
 	}
-	solve(idx + 1, sum + D[idx]);
+	solve(idx + 1, sum + minValue[idx]);
+	return;
 }
 
 int main() {
 	ios::sync_with_stdio(0); cin.tie(0);
-	int T;
 	cin >> T;
 	for (int tc = 1; tc <= T; tc++) {
-		ans = 987654321;
 		for (int i = 0; i < 4; i++)
 			cin >> pay[i];
-		for (int i = 1; i < 13; i++) {
-			cin >> week[i];
-			D[i] = min(pay[1], week[i] * pay[0]);
+		ans = pay[3];
+		int d;
+		for (int i = 1; i <= 12; i++) {
+			cin >> d;
+			minValue[i] = min(pay[0] * d, pay[1]);
 		}
 		solve(1, 0);
-		cout << "#" << tc << " " << min(ans, pay[3]) << endl;
+		cout << '#' << tc << ' ' << ans << '\n';
 	}
+	return 0;
 }
