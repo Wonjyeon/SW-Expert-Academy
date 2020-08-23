@@ -2,29 +2,27 @@
 #include <algorithm>
 using namespace std;
 
-int T, N, ans, sx, sy, map[21][21];
+int T, N, sc, sr, ans = -1, map[21][21];
+int dc[] = { 1,1,-1,-1 };		//í–‰
+int dr[] = { 1,-1,-1,1 };		//ì—´
 bool visit[101];
-int dx[] = { 1,1,-1,-1 };
-int dy[] = { 1,-1,-1,1 };
 
 void dfs(int c, int r, int dir, int cnt) {
 	visit[map[c][r]] = true;
-	int x = c + dx[dir], y = r + dy[dir];
-	// ¸¶Áö¸· ¹æÇâÀÌ¸é¼­ Ã³À½ ÁöÁ¡°ú °°À½. -> °¡´ÉÇÑ ·çÆ®.
-	if (dir == 3 && x == sx&&y == sy) {
+	int nc = c + dc[dir], nr = r + dr[dir];
+
+	if (dir == 3 && nc == sc && nr == sr) {
 		ans = max(ans, cnt);
-		visit[map[c][r]] = false;
 		return;
 	}
-	// ¹üÀ§ ¾È¿¡ ÀÖÀ¸¸é¼­ ¾ÆÁ÷ ¸ÔÁö ¾ÊÀº µðÀúÆ®
-	if (x >= 0 && x < N&&y >= 0 && y < N && !visit[map[x][y]]) {
-		// ÃÖ´ëÇÑ ÇÑ ¹æÇâÀ¸·Î Âß °¨
-		dfs(x, y, dir, cnt + 1);
-		// ¾ÆÁ÷ ¹æÇâÀÌ ³¡³ªÁö ¾Ê¾Ò°í, ±× ´ÙÀ½ ¹æÇâÀ¸·Î ÁøÇà.
+
+	if (nc >= 0 && nc < N&&nr >= 0 && nr < N && !visit[map[nc][nr]]) {
+		visit[map[nc][nr]] = true;
+		dfs(nc, nr, dir, cnt + 1);
 		if (dir < 3)
-			dfs(x, y, dir + 1, cnt + 1);
+			dfs(nc, nr, dir + 1, cnt + 1);
+		visit[map[nc][nr]] = false;
 	}
-	visit[map[c][r]] = false;
 }
 
 int main() {
@@ -33,13 +31,17 @@ int main() {
 	for (int tc = 1; tc <= T; tc++) {
 		cin >> N;
 		ans = -1;
-		for (int i = 0; i < N; i++)
-			for (int j = 0; j < N; j++)
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
 				cin >> map[i][j];
+			}
+		}
 		for (int i = 0; i < N - 2; i++) {
 			for (int j = 1; j < N - 1; j++) {
-				sx = i, sy = j;
+				sc = i, sr = j;
+				visit[map[i][j]] = true;
 				dfs(i, j, 0, 1);
+				visit[map[i][j]] = false;
 			}
 		}
 		cout << '#' << tc << ' ' << ans << '\n';
